@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.0...v1.0.1) (2022-10-21)
+
+
+### Bug Fixes
+
+* **cli:** Missing entrypoint. ([e8cb6ce](https://github.com/Ecogenomics/gtdb-itol-decorate/commit/e8cb6ce77c3aa526b6ebd51fd5a35edf22c5c15d))
+
 # 1.0.0 (2022-10-21)
 
 
