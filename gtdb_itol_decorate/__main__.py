@@ -1,15 +1,12 @@
-import os
 from pathlib import Path
 
-import dendropy
 import typer
 
-from gtdb_itol_decorate.decorate import decorate_tree
 from gtdb_itol_decorate.gtdb import load_taxonomy_file, get_taxon_to_phylum
 from gtdb_itol_decorate.itol import get_phylum_to_lca, get_phylum_colours, write_color_datastrip, \
     get_internal_nodes_with_labels, write_internal_node_labels, write_tree_colours, write_collapse_file, \
     write_popup_file
-from gtdb_itol_decorate.newick import load_newick_file, load_newick_to_tree, validate_dendropy_namespace, \
+from gtdb_itol_decorate.newick import load_newick_to_tree, validate_dendropy_namespace, \
     get_canonical_mapping, validate_sets, strip_tree_labels, set_node_desc_taxa, set_taxon_label_for_internal_nodes
 from gtdb_itol_decorate.util import log
 
@@ -63,6 +60,10 @@ def main(tree_path: Path, tax_path: Path, out_dir: Path):
     write_collapse_file(d_int_label_to_lca, out_dir / 'itol_collapse_family.txt', 'f__')
     write_collapse_file(d_int_label_to_lca, out_dir / 'itol_collapse_genus.txt', 'g__')
     log('Done.')
+
+
+def app():
+    typer.run(main)
 
 
 if __name__ == "__main__":

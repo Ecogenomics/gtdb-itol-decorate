@@ -33,7 +33,7 @@ setup(name=meta['title'],
       },
       entry_points={
           'console_scripts': [
-              'gtdb_itol_decorate = gtdb_itol_decorate.__main__:run'
+              'gtdb_itol_decorate = gtdb_itol_decorate.__main__:app'
           ]
       },
       classifiers=[
