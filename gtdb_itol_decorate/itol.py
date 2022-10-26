@@ -51,8 +51,14 @@ def get_phylum_to_lca(tree: dendropy.Tree):
     """Calculate the LCA for each phylum. Considers singletons."""
     out = defaultdict(list)
     for node in tree.postorder_node_iter():
-        if len(node.tax_label) > 0 and node.tax_label[0].startswith('p__'):
-            out[node.tax_label[0]].append(get_lca_str(node))
+        # Consider the case where the domain shares the same label as the phylum
+        if len(node.tax_label) > 0:
+            if len(node.tax_label) >= 2:
+                if node.tax_label[0].startswith('d__') and node.tax_label[1].startswith('p__'):
+                    out[node.tax_label[1]].append(get_lca_str(node))
+            else:
+                if node.tax_label[0].startswith('p__'):
+                    out[node.tax_label[0]].append(get_lca_str(node))
     return out
 
 
