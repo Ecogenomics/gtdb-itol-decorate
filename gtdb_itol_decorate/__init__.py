@@ -1,7 +1,7 @@
 __title__ = 'gtdb_itol_decorate'
 __description__ = 'Creates iTOL files for tree decoration, given a set of GTDB genomes.'
 __url__ = 'https://github.com/Ecogenomics/gtdb-itol-decorate'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __author__ = 'Aaron Mussig'
 __author_email__ = 'aaronmussig@gmail.com'
 __license__ = 'GPL-3.0'
