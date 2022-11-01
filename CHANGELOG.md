@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.3...v1.1.0) (2022-11-01)
+
+
+### Features
+
+* **itol:** Polyphyletic phyla will be the same colour. ([323293f](https://github.com/Ecogenomics/gtdb-itol-decorate/commit/323293fcbfcb76bfbdc89fb2dc67a9c23c803689))
+
 ## [1.0.3](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.2...v1.0.3) (2022-10-26)
 
 
