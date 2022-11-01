@@ -1,15 +1,12 @@
 from collections import defaultdict
 
 
-
 def decorate_tree(tree, d_gid_to_tax):
-
     d_node_to_leaf_taxa = defaultdict(set)
     for node in tree.postorder_node_iter():
         # desc_taxa = get_node_desc_taxa(node)
 
         print(node)
-
 
     # Create a mapping from the taxon to each gid
     d_taxon_to_gids = defaultdict(set)

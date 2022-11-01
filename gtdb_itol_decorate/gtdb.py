@@ -1,4 +1,3 @@
-from collections import defaultdict
 from typing import Dict
 
 from gtdblib.taxon.rank import TaxonRank
@@ -10,8 +9,8 @@ from gtdb_itol_decorate.util import canonical_gid
 
 def load_taxonomy_file(path: str, limit_to_gids: set):
     gtdb_ranks = [TaxonRank.DOMAIN, TaxonRank.PHYLUM, TaxonRank.CLASS,
-                   TaxonRank.ORDER, TaxonRank.FAMILY, TaxonRank.GENUS,
-                   TaxonRank.SPECIES]
+                  TaxonRank.ORDER, TaxonRank.FAMILY, TaxonRank.GENUS,
+                  TaxonRank.SPECIES]
     out = dict()
     with open(path) as f:
         for line in f.readlines():
@@ -34,7 +33,6 @@ def load_taxonomy_file(path: str, limit_to_gids: set):
     return out
 
 
-
 def get_taxon_to_phylum(d_tax: Dict[str, Taxonomy]):
     out = dict()
     for gid, taxonomy in d_tax.items():
@@ -43,3 +41,9 @@ def get_taxon_to_phylum(d_tax: Dict[str, Taxonomy]):
             out[taxon] = taxonomy.p.value
     return out
 
+
+def remove_polyphyletic_suffix(taxon):
+    if not (taxon.startswith('g__') or taxon.startswith('s__')):
+        if taxon[-2] == '_':
+            return taxon[:-2]
+    return taxon

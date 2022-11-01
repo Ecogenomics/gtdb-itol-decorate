@@ -8,6 +8,7 @@ def log(msg: str, title=False):
     if title:
         print('-' * 80)
 
+
 def canonical_gid(gid):
     """Get canonical form of NCBI genome accession.
 
@@ -28,7 +29,6 @@ def canonical_gid(gid):
         gid = gid[0:gid.find('.')]
 
     return gid
-
 
 
 def is_float(s):

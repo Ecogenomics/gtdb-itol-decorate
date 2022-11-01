@@ -1,5 +1,6 @@
-import dendropy
 from collections import Counter, deque, defaultdict
+
+import dendropy
 
 from gtdb_itol_decorate.util import canonical_gid, log, is_float
 
@@ -25,6 +26,7 @@ def load_newick_to_tree(path: str) -> dendropy.Tree:
                                          rooting='force-rooted',
                                          preserve_underscores=True)
 
+
 def validate_dendropy_namespace(taxa):
     taxa_count = Counter(taxa)
     duplicates = {k: v for k, v in taxa_count.items() if v > 1}
@@ -33,11 +35,22 @@ def validate_dendropy_namespace(taxa):
     return
 
 
+def get_lca_str(node: dendropy.Node):
+    if node.is_leaf():
+        return node.taxon.label
+    if len(node.child_nodes()) < 2:
+        return node.child_nodes()[0].leaf_nodes()[0].taxon.label
+    left = node.child_nodes()[0].leaf_nodes()[0]
+    right = node.child_nodes()[1].leaf_nodes()[0]
+    return f'{left.taxon.label}|{right.taxon.label}'
+
+
 def get_canonical_mapping(gids):
     out = dict()
     for gid in gids:
         out[canonical_gid(gid)] = gid
     return out
+
 
 def validate_sets(newick_gids, tax_gids):
     if newick_gids != tax_gids:
@@ -85,6 +98,7 @@ def parse_label(label):
 
     return support, taxon, auxiliary_info
 
+
 def strip_tree_labels(tree: dendropy.Tree):
     for node in tree.preorder_node_iter():
         if node.is_leaf():
@@ -93,6 +107,7 @@ def strip_tree_labels(tree: dendropy.Tree):
         if taxon:
             node.label = str(support)
     return
+
 
 def get_node_depth(tree: dendropy.Tree):
     """Return the depth of every node in a tree."""
@@ -126,7 +141,7 @@ def set_node_desc_taxa(tree: dendropy.Tree):
 
 def set_taxon_label_for_internal_nodes(tree: dendropy.Tree, d_tax):
     # Find the highest internal node that forms a monophyletic group
-
+    taxon_to_lca = defaultdict(list)
     ranks = ('d', 'p', 'c', 'o', 'f', 'g', 's')
 
     queue = deque([(tree.seed_node, 'd')])
@@ -139,15 +154,17 @@ def set_taxon_label_for_internal_nodes(tree: dendropy.Tree, d_tax):
         # Check if this forms a monophyletic group at the target taxon
         desc_taxa = {getattr(d_tax[x], target_rank).value for x in node.desc_taxa}
         if len(desc_taxa) == 1:
-            node.tax_label.append(list(desc_taxa)[0])
+            cur_taxon = desc_taxa.pop()
+            node.tax_label.append(cur_taxon)
+            taxon_to_lca[cur_taxon].append(get_lca_str(node))
 
             # Re-queue this node at the front, in-case it can be extended
             if target_rank != 's':
-                next_rank = ranks[ranks.index(target_rank)+1]
+                next_rank = ranks[ranks.index(target_rank) + 1]
                 queue.appendleft((node, next_rank))
 
         # Otherwise, keep going down
         else:
             for child in node.child_nodes():
                 queue.append((child, target_rank))
-    return
+    return taxon_to_lca

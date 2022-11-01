@@ -1,8 +1,9 @@
-from collections import deque, defaultdict
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, Set
+from typing import Dict, FrozenSet
 
 import dendropy
+import seaborn as sns
 from gtdblib.file.itol.collapse import iTolCollapseFile
 from gtdblib.file.itol.dataset_color_strip import iTolDatasetColorStripFile
 from gtdblib.file.itol.label import iTolLabelFile
@@ -11,37 +12,24 @@ from gtdblib.file.itol.tree_colors import iTolTreeColorsFile
 from gtdblib.taxonomy.taxonomy import Taxonomy
 from gtdblib.util.color import TABLEAU_20, rgb_to_hex
 
-from gtdb_itol_decorate.newick import parse_label
-
-import seaborn as sns
-
-from gtdb_itol_decorate.util import canonical_gid
+from gtdb_itol_decorate.gtdb import remove_polyphyletic_suffix
+from gtdb_itol_decorate.newick import get_lca_str
 
 
-def get_lca_str(node: dendropy.Node):
-    if node.is_leaf():
-        return node.taxon.label
-    if len(node.child_nodes()) < 2:
-        return node.child_nodes()[0].leaf_nodes()[0].taxon.label
-    left = node.child_nodes()[0].leaf_nodes()[0]
-    right = node.child_nodes()[1].leaf_nodes()[0]
-    return f'{left.taxon.label}|{right.taxon.label}'
-
-
-
-def get_phylum_colours(d_phylum_to_lca):
-    """Generate a list of colours for each phylum. Order is inferred through a
-    depth first search, to ensure no clade colours are side by side.
+def get_phylum_colours(phyla: FrozenSet[str]):
+    """Generate a list of colours for each phylum.
     """
     colours = TABLEAU_20
 
+    phyla_mono = {remove_polyphyletic_suffix(x) for x in phyla}
     d_phylum_to_colour = dict()
-    for phylum in d_phylum_to_lca.keys():
+    for phylum in phyla_mono:
         d_phylum_to_colour[phylum] = colours[len(d_phylum_to_colour) % len(colours)]
 
     # Generate a colour palette for each phylum (increasing brightness)
     out = dict()
-    for phylum, colour in d_phylum_to_colour.items():
+    for phylum in phyla:
+        colour = d_phylum_to_colour[remove_polyphyletic_suffix(phylum)]
         cur_pal = sns.light_palette(colour, 6, reverse=True)
         out[phylum] = [rgb_to_hex(*[round(y * 255) for y in x]) for x in cur_pal]
     return out
@@ -60,7 +48,6 @@ def get_phylum_to_lca(tree: dendropy.Tree):
                 if node.tax_label[0].startswith('p__'):
                     out[node.tax_label[0]].append(get_lca_str(node))
     return out
-
 
 
 def write_color_datastrip(d_phylum_to_lca, d_phylum_palette, path):
@@ -83,7 +70,8 @@ def get_internal_nodes_with_labels(tree: dendropy.Tree):
             out[';'.join(node.tax_label)].append(get_lca_str(node))
     return out
 
-def write_internal_node_labels( d_label_to_lca,path: Path):
+
+def write_internal_node_labels(d_label_to_lca, path: Path):
     file = iTolLabelFile(path)
 
     # 1. Add internal node labels (trivial)
@@ -91,7 +79,6 @@ def write_internal_node_labels( d_label_to_lca,path: Path):
         for lr_nodes in lst_lr_nodes:
             file.insert(lr_nodes, label)
     file.write()
-
 
 
 def write_tree_colours(tree, d_taxon_to_phylum, path, d_color_palette):
@@ -122,7 +109,6 @@ def write_tree_colours(tree, d_taxon_to_phylum, path, d_color_palette):
     file.write()
 
 
-
 def write_collapse_file(d_int_label_to_lca, path, taxon_prefix):
     file = iTolCollapseFile(path)
     for taxon, lst_lr_nodes in d_int_label_to_lca.items():
@@ -131,6 +117,7 @@ def write_collapse_file(d_int_label_to_lca, path, taxon_prefix):
                 if '|' in lr_node:
                     file.insert(lr_node)
     file.write()
+
 
 def write_popup_file(tree: dendropy.Tree, d_tax: Dict[str, Taxonomy], path: Path):
     file = iTolPopupFile(path)

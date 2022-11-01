@@ -1,9 +1,10 @@
+import sys
 from pathlib import Path
 
 import typer
 
 from gtdb_itol_decorate.gtdb import load_taxonomy_file, get_taxon_to_phylum
-from gtdb_itol_decorate.itol import get_phylum_to_lca, get_phylum_colours, write_color_datastrip, \
+from gtdb_itol_decorate.itol import get_phylum_colours, write_color_datastrip, \
     get_internal_nodes_with_labels, write_internal_node_labels, write_tree_colours, write_collapse_file, \
     write_popup_file
 from gtdb_itol_decorate.newick import load_newick_to_tree, validate_dendropy_namespace, \
@@ -28,14 +29,18 @@ def main(tree_path: Path, tax_path: Path, out_dir: Path):
 
     log('Reverse mapping taxon to phylum')
     d_taxon_to_phylum = get_taxon_to_phylum(d_tax)
+    phyla = frozenset(d_taxon_to_phylum.values())
+    if len(phyla) == 0:
+        log('No phyla could be found, please send me your tree!')
+        sys.exit(1)
 
     log('Annotating internal nodes with descendant taxa')
     set_node_desc_taxa(tree)
-    set_taxon_label_for_internal_nodes(tree, d_tax)
+    d_taxon_to_lca = set_taxon_label_for_internal_nodes(tree, d_tax)
 
     log('Getting the last common ancestor of each phylum.')
-    d_phylum_to_lca = get_phylum_to_lca(tree)
-    d_phylum_palette = get_phylum_colours(d_phylum_to_lca)
+    d_phylum_to_lca = {k: v for k, v in d_taxon_to_lca.items() if k.startswith('p__')}
+    d_phylum_palette = get_phylum_colours(phyla)
     write_color_datastrip(d_phylum_to_lca, d_phylum_palette, out_dir / 'itol_dataset_strip_phylum.txt')
 
     log('Making tree compatible with iTOL (stripping labels)')
