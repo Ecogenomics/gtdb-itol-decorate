@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.2...v1.0.3) (2022-10-26)
+
+
+### Bug Fixes
+
+* **itol:** Fix an issue where phyla could not be determined. ([f74cfff](https://github.com/Ecogenomics/gtdb-itol-decorate/commit/f74cfff9a8b1228bd51df84b4b46fb11f19f2e4a))
+
 ## [1.0.2](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.1...v1.0.2) (2022-10-21)
 
 
