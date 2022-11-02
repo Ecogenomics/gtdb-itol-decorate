@@ -19,7 +19,7 @@ gtdb_itol_decorate /path/to/tree.tree /path/to/taxonomy.tsv /path/to/output
 
 ## Output
 
-![](docs/itol_example.svg?raw=true | height=200)
+![](docs/itol_example.svg?raw=true)
 
 
 The program will output the following files.
