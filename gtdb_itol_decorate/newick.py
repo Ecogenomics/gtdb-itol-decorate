@@ -1,3 +1,5 @@
+import sys
+
 from collections import Counter, deque, defaultdict
 
 import dendropy
@@ -27,7 +29,7 @@ def load_newick_to_tree(path: str) -> dendropy.Tree:
                                          preserve_underscores=True)
 
 
-def validate_dendropy_namespace(taxa):
+def assert_no_duplicate_taxa(taxa):
     taxa_count = Counter(taxa)
     duplicates = {k: v for k, v in taxa_count.items() if v > 1}
     if len(duplicates) > 0:
@@ -48,7 +50,8 @@ def get_lca_str(node: dendropy.Node):
 def get_canonical_mapping(gids):
     out = dict()
     for gid in gids:
-        out[canonical_gid(gid)] = gid
+        out[gid] = gid
+        # out[canonical_gid(gid)] = gid
     return out
 
 

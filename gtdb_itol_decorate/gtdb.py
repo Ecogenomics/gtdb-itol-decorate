@@ -15,7 +15,7 @@ def load_taxonomy_file(path: str, limit_to_gids: set):
     with open(path) as f:
         for line in f.readlines():
             gid, tax = line.strip().split('\t')
-            gid = canonical_gid(gid)
+            # gid = canonical_gid(gid)
             if gid not in limit_to_gids:
                 continue
             if gid in out:

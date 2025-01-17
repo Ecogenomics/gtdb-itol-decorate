@@ -154,3 +154,4 @@ node_modules/
 docs/*.rst
 !docs/index.rst
 
+/test

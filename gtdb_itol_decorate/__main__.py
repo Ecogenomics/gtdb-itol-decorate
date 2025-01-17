@@ -7,21 +7,27 @@ from gtdb_itol_decorate.gtdb import load_taxonomy_file, get_taxon_to_phylum
 from gtdb_itol_decorate.itol import get_phylum_colours, write_color_datastrip, \
     get_internal_nodes_with_labels, write_internal_node_labels, write_tree_colours, write_collapse_file, \
     write_popup_file
-from gtdb_itol_decorate.newick import load_newick_to_tree, validate_dendropy_namespace, \
+from gtdb_itol_decorate.newick import load_newick_to_tree, assert_no_duplicate_taxa, \
     get_canonical_mapping, validate_sets, strip_tree_labels, set_node_desc_taxa, set_taxon_label_for_internal_nodes
 from gtdb_itol_decorate.util import log
 
 
 def main(tree_path: Path, tax_path: Path, out_dir: Path):
+
+    # Create the output directory
     log(f'Creating output directory: {out_dir}')
     out_dir.mkdir(exist_ok=True)
 
+    # Read and validate the tree
     log(f'Reading tree from: {tree_path}')
     tree = load_newick_to_tree(str(tree_path))
     log(f'Found {len(tree.leaf_nodes()):,} leaf nodes in the tree.')
-    validate_dendropy_namespace((x.label for x in tree.taxon_namespace))
+    assert_no_duplicate_taxa((x.label for x in tree.taxon_namespace))
+
+    # Create a mapping from the canonical genome ID to the tree
     d_canonical_to_gid = get_canonical_mapping((x.label for x in tree.taxon_namespace))
 
+    # Read and validate the taxonomy file
     log(f'Reading taxonomy from: {tax_path}')
     d_tax = load_taxonomy_file(str(tax_path), set(d_canonical_to_gid.keys()))
     log(f'Read the taxonomy for {len(d_tax):,} genomes.')
