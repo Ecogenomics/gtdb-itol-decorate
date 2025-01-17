@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.1.0...v1.1.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* **ids:** Fix the case where canonical IDs are not supplied. ([95730be](https://github.com/Ecogenomics/gtdb-itol-decorate/commit/95730be2c4b71d042e39b014144c6eb5921dcf33))
+
 # [1.1.0](https://github.com/Ecogenomics/gtdb-itol-decorate/compare/v1.0.3...v1.1.0) (2022-11-01)
 
 
